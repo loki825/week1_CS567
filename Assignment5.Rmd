@@ -1,0 +1,19 @@
+---
+title: "Assignment4.Rmd"
+author: "lokesh"
+date: "February 13, 2019"
+output: html_document
+---
+```{r}
+#install.packages("rvest")
+library(rvest)
+sensex <- read_html("https://finance.yahoo.com/quote/%5EBSESN/history/")
+sensexhistory <- html_table(sensex)[[1]]
+historydata<-data.frame(sensexhistory)
+historydata
+
+historydata$Age <- floor(difftime((Sys.Date()),as.Date(as.character(historydata$Date),'Oct 09, 2018',format = '%B %d, %Y'),unit = "weeks"))
+historydata$Age <- as.double(historydata$Age)/52.25
+historydata
+```
+
