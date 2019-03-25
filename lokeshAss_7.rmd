@@ -1,0 +1,16 @@
+```{r}
+
+#install.packages("rvest")
+library(rvest)
+bicycle <- read_html("https://en.wikipedia.org/wiki/Bicycle")
+bicycledata<- bicycle %>% html_nodes("table")%>%.[1]%>% html_table(fill=TRUE)
+bicycledata<-data.frame(bicycledata)
+bicycledata
+
+ggplot(bicycledata,aes(x=production..M.,y=sales..M.))+geom_point()+geom_smooth(method=lm,se=TRUE)
+
+
+
+
+```
+
