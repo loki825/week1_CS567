@@ -1,0 +1,36 @@
+```{r}
+#install.packages("rvest")
+library(rvest)
+bicycle <- read_html("https://en.wikipedia.org/wiki/Bicycle")
+bicycledata<- bicycle %>% html_nodes("table")%>%.[1]%>% html_table(fill=TRUE)
+bicycledata<-data.frame(bicycledata)
+bicycledata
+
+#ggplot(bicycledata,aes(x=production..M.,y=sales..M.))+geom_point()+geom_smooth(method=lm,se=TRUE)
+
+par(mar=rep(0.2,4))
+bicycleClusters<-kmeans(bicycledata[,c(2,3)],centers = 2)
+names(bicycleClusters)
+bicycledata$cluster<-as.factor(bicycleClusters$cluster)
+
+plot(bicycledata$production..M.,bicycledata$sales..M.,col=bicycledata$cluster,pch=19,cex=2)
+points(bicycleClusters$centers,col=1:2,pch=3,cex=3,lwd=3)
+
+# linear regression and residual plot
+
+fit<-lm(sales..M.~production..M.,data=bicycledata) # Fit the model 
+coef(fit)
+summary(fit) # Reporting the results 
+
+bicycledata$predicted <- predict(fit) # save the predicted values 
+bicycledata$residuals <- residuals(fit) #save the residual values 
+
+ggplot(bicycledata,aes(x=production..M.,y=sales..M.))+
+  geom_smooth(method=lm,se=FALSE,color="black") +
+  geom_segment(aes(xend=production..M.,yend=predicted),alpha=0.2)+
+  geom_point(aes(color=abs(residuals))) +
+  scale_color_continuous(low="violet",high="violet")+
+  geom_point(aes(y=predicted),shape=1)+
+  theme_bw() #adding theme for cleaner look
+```
+
